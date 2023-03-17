@@ -58,8 +58,8 @@ app.use(
     name: "authId",
     secret: process.env.SESSION_SECRET_KEY as string,
     store: store,
-    resave: true,
-    saveUninitialized: true,
+    resave: false,
+    saveUninitialized: false,
     cookie: {
       sameSite: "none",
       secure: process.env.NODE_ENV === "production",

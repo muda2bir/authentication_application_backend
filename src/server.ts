@@ -32,7 +32,7 @@ app.use(
     store: MongoStore.create({
       mongoUrl: process.env.DATABASE, // TODO: Update the DATABASE link after the project deploys successfully!
     }),
-    cookie: { secure: true },
+    cookie: { maxAge: 1000 * 60 * 60 * 24 },
   })
 ); // * This is the session middleware
 

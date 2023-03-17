@@ -34,7 +34,7 @@ app.use(
       mongoUrl: process.env.DATABASE, // TODO: Update the DATABASE link after the project deploys successfully!
     }),
     cookie: {
-      secure: false,
+      secure: true,
       httpOnly: true,
       path: "/",
       maxAge: 604800000,

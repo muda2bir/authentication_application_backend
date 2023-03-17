@@ -16,7 +16,7 @@ const mongoStore = MongoDBStore(session); // * Initializing the store to save th
 const store = new mongoStore({
   collection: "userSessions",
   uri: process.env.DATABASE as string,
-  expires: 604800000,
+  expires: 1000 * 60 * 60 * 24 * 7,
 });
 
 const app = express();
@@ -32,6 +32,24 @@ app.use(
 ); // TODO: Update the CORS_ORIGIN after the project deploys successfully!
 app.use(express.json({ limit: "50mb" })); // * This is a middleware that will parse the json coming before sending the response
 app.use(express.urlencoded({ limit: "50mb", extended: true }));
+// app.use(
+//   session({
+//     genid: function () {
+//       return uuidv4();
+//     },
+//     name: "authId",
+//     secret: process.env.SESSION_SECRET_KEY as string,
+//     store: store,
+//     resave: false,
+//     saveUninitialized: false,
+//     cookie: {
+//       sameSite: false,
+//       secure: process.env.NODE_ENV === "production",
+//       maxAge: 1000 * 60 * 60 * 24 * 7,
+//       httpOnly: true,
+//     },
+//   })
+// ); // * This is the session middleware
 app.use(
   session({
     genid: function () {
@@ -40,13 +58,12 @@ app.use(
     name: "authId",
     secret: process.env.SESSION_SECRET_KEY as string,
     store: store,
-    resave: false,
-    saveUninitialized: false,
+    resave: true,
+    saveUninitialized: true,
     cookie: {
-      sameSite: false,
+      sameSite: "none",
       secure: process.env.NODE_ENV === "production",
-      maxAge: 604800000,
-      httpOnly: true,
+      maxAge: 1000 * 60 * 60 * 24 * 7,
     },
   })
 ); // * This is the session middleware

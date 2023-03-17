@@ -1,7 +1,8 @@
 if (process.env.NODE_ENV !== "production") require("dotenv").config(); // * This is only going to import dotenv in the development
 import cors from "cors";
-import MongoStore from "connect-mongo";
 import express from "express";
+import MongoDBStore from "connect-mongodb-session";
+import { v4 as uuidv4 } from "uuid";
 import session from "express-session";
 import passport from "passport";
 import "./strategies/google-auth"; // * Google Authentication Strategy
@@ -11,14 +12,22 @@ import connectDB from "./database";
 import { router as AuthenticationRouters } from "./routes/auth"; // * Authentication Router
 import { router as UserRouter } from "./routes/user"; // * User Information Router
 import { router as ImageRouter } from "./routes/image";
+const mongoStore = MongoDBStore(session); // * Initializing the store to save the sessions
+const store = new mongoStore({
+  collection: "userSessions",
+  uri: process.env.DATABASE as string,
+  expires: 604800000,
+});
+
 const app = express();
 const PORT = process.env.PORT || 3001;
 connectDB(); // * Securing Database Connection
 
-app.set("trust proxy", 1);
+if (process.env.NODE_ENV === "production") app.set("trust proxy", 1);
 app.use(
   cors({
     origin: process.env.CORS_ORIGIN,
+    methods: ["POST", "PUT", "GET", "OPTIONS", "HEAD"],
     credentials: true,
   })
 ); // TODO: Update the CORS_ORIGIN after the project deploys successfully!
@@ -26,18 +35,19 @@ app.use(express.json({ limit: "50mb" })); // * This is a middleware that will pa
 app.use(express.urlencoded({ limit: "50mb", extended: true }));
 app.use(
   session({
+    genid: function () {
+      return uuidv4();
+    },
+    name: "authId",
     secret: process.env.SESSION_SECRET_KEY as string,
-    name: "authenticatorId",
+    store: store,
     resave: false,
     saveUninitialized: false,
-    store: MongoStore.create({
-      mongoUrl: process.env.DATABASE, // TODO: Update the DATABASE link after the project deploys successfully!
-    }),
     cookie: {
-      secure: true,
-      httpOnly: true,
-      path: "/",
+      sameSite: false,
+      secure: process.env.NODE_ENV === "production",
       maxAge: 604800000,
+      httpOnly: true,
     },
   })
 ); // * This is the session middleware

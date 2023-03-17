@@ -1,6 +1,5 @@
 if (process.env.NODE_ENV !== "production") require("dotenv").config(); // * This is only going to import dotenv in the development
 import cors from "cors";
-import cookieParser from "cookie-parser";
 import MongoStore from "connect-mongo";
 import express from "express";
 import session from "express-session";
@@ -25,12 +24,11 @@ app.use(
 ); // TODO: Update the CORS_ORIGIN after the project deploys successfully!
 app.use(express.json({ limit: "50mb" })); // * This is a middleware that will parse the json coming before sending the response
 app.use(express.urlencoded({ limit: "50mb", extended: true }));
-app.use(cookieParser()); // * This will parse the cookies for us.
 app.use(
   session({
     secret: process.env.SESSION_SECRET_KEY as string,
     resave: false,
-    saveUninitialized: false,
+    saveUninitialized: true,
     store: MongoStore.create({
       mongoUrl: process.env.DATABASE, // TODO: Update the DATABASE link after the project deploys successfully!
     }),

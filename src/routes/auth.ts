@@ -14,11 +14,18 @@ router.post("/login", passport.authenticate("local"), (req, res) => {
 });
 
 // * Logging out the user
-router.post("/logout", (req, res) => {
-  req.logout(function (err) {
-    if (err) return res.json({ status: "error", message: err });
-    res.json({ status: "ok", message: "User Logged Out Successfully!" });
-  });
+router.post("/logout", (req, res, next) => {
+  try {
+    req.logout(function (err) {
+      if (err) {
+        return next(err);
+      }
+    });
+  } catch (err) {
+    if (err instanceof Error) {
+      return res.json({ status: "error", message: err.message });
+    }
+  }
 });
 
 // * Registering a User

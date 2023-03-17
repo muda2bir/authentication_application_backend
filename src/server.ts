@@ -27,12 +27,18 @@ app.use(express.urlencoded({ limit: "50mb", extended: true }));
 app.use(
   session({
     secret: process.env.SESSION_SECRET_KEY as string,
+    name: "authenticatorId",
     resave: false,
-    saveUninitialized: true,
+    saveUninitialized: false,
     store: MongoStore.create({
       mongoUrl: process.env.DATABASE, // TODO: Update the DATABASE link after the project deploys successfully!
     }),
-    cookie: { maxAge: 1000 * 60 * 60 * 24 },
+    cookie: {
+      secure: false,
+      httpOnly: true,
+      path: "/",
+      maxAge: 604800000,
+    },
   })
 ); // * This is the session middleware
 

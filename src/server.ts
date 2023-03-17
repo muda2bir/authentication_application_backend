@@ -26,8 +26,7 @@ connectDB(); // * Securing Database Connection
 if (process.env.NODE_ENV === "production") app.set("trust proxy", 1);
 app.use(
   cors({
-    origin: process.env.CORS_ORIGIN,
-    methods: ["POST", "PUT", "GET", "OPTIONS", "HEAD"],
+    origin: "*",
     credentials: true,
   })
 ); // TODO: Update the CORS_ORIGIN after the project deploys successfully!

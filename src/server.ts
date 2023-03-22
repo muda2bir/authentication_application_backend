@@ -1,7 +1,7 @@
 if (process.env.NODE_ENV !== "production") require("dotenv").config(); // * This is only going to import dotenv in the development
 import cors from "cors";
 import express from "express";
-import MongoDBStore from "connect-mongodb-session";
+import MongoStore from "connect-mongo";
 import { v4 as uuidv4 } from "uuid";
 import session from "express-session";
 import passport from "passport";
@@ -12,12 +12,6 @@ import connectDB from "./database";
 import { router as AuthenticationRouters } from "./routes/auth"; // * Authentication Router
 import { router as UserRouter } from "./routes/user"; // * User Information Router
 import { router as ImageRouter } from "./routes/image";
-const mongoStore = MongoDBStore(session); // * Initializing the store to save the sessions
-const store = new mongoStore({
-  collection: "userSessions",
-  uri: process.env.DATABASE as string,
-  expires: 1000 * 60 * 60 * 24 * 7,
-});
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -39,10 +33,11 @@ app.use(
     },
     name: "authId",
     secret: process.env.SESSION_SECRET_KEY as string,
-    store: store,
+    store: MongoStore.create({ mongoUrl: process.env.DATABASE }),
     resave: false,
     saveUninitialized: true,
     cookie: {
+      sameSite: "none",
       secure: process.env.NODE_ENV === "production",
       maxAge: 1000 * 60 * 60 * 24 * 7,
     },

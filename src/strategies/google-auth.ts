@@ -13,7 +13,9 @@ passport.use(
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
-        const theUser = await User.findOne({ googleId: profile.id });
+        const theUser = await User.findOne({
+          email: profile.emails?.[0].value,
+        });
         if (!theUser) {
           const hashedPassword = await hashPassword(
             process.env.DEFAULT_PASSWORD as string
@@ -28,6 +30,11 @@ passport.use(
           newUser.save();
           return done(null, newUser);
         }
+        if (theUser.googleId !== "") return done(null, theUser);
+        await User.updateOne(
+          { email: profile.emails?.[0].value },
+          { $set: { googleId: profile.id } }
+        );
         return done(null, theUser);
       } catch (err) {
         if (err instanceof Error) {

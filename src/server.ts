@@ -32,24 +32,6 @@ app.use(
 ); // TODO: Update the CORS_ORIGIN after the project deploys successfully!
 app.use(express.json({ limit: "50mb" })); // * This is a middleware that will parse the json coming before sending the response
 app.use(express.urlencoded({ limit: "50mb", extended: true }));
-// app.use(
-//   session({
-//     genid: function () {
-//       return uuidv4();
-//     },
-//     name: "authId",
-//     secret: process.env.SESSION_SECRET_KEY as string,
-//     store: store,
-//     resave: false,
-//     saveUninitialized: false,
-//     cookie: {
-//       sameSite: false,
-//       secure: process.env.NODE_ENV === "production",
-//       maxAge: 1000 * 60 * 60 * 24 * 7,
-//       httpOnly: true,
-//     },
-//   })
-// ); // * This is the session middleware
 app.use(
   session({
     genid: function () {
@@ -59,9 +41,8 @@ app.use(
     secret: process.env.SESSION_SECRET_KEY as string,
     store: store,
     resave: false,
-    saveUninitialized: false,
+    saveUninitialized: true,
     cookie: {
-      sameSite: "none",
       secure: process.env.NODE_ENV === "production",
       maxAge: 1000 * 60 * 60 * 24 * 7,
     },

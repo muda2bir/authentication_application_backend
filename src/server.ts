@@ -31,11 +31,12 @@ app.use(
     genid: function () {
       return uuidv4();
     },
-    name: "authId",
+    name: "sid",
     secret: process.env.SESSION_SECRET_KEY as string,
     store: MongoStore.create({ mongoUrl: process.env.DATABASE }),
     resave: false,
-    saveUninitialized: true,
+    saveUninitialized: false,
+    proxy: true,
     cookie: {
       httpOnly: true,
       // sameSite: "none",
